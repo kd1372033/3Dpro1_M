@@ -1,0 +1,36 @@
+ログイン
+File
+　→Accounts
+　　→Repositories
+　　　→該当のフォルダのちっちゃい↓をクリック
+
+クローンの作成
+Parent Folderの変更　C:¥　にする
+Cloneをクリック
+Repositoriesに戻ればOK
+
+ファイル追加後
+Unstagedの右にあるStageを押してStagedに入れる
+Commit Subject　タイトル
+Description　説明　　　　　　を書いておく
+commitとプッシュを一気にする
+ちっちゃい矢印を押すと「Commit and Push」を出てくるので押す
+
+更新する
+Local Changes(n)を選択
+Ctrl+Aで全選択
+Stageを押す
+Commit SubjectとDescriptionを入力
+Commit and Push
+
+プログラムにエラーが生じてバージョンを戻したい
+プログラムをダブルクリックしてCheckout Commit　選択した状態に戻しますよ
+※原因特定のみに使う(エラーを前のバージョンで直してしまうと存在しない未来ができてしまう)
+※最新のバージョンをダブルクリックして最新にしてからエラーを解消する。
+
+データの復旧
+前提　ForkアプリとGitHubのダウンロード済み
+左上のFile→Accountsでログイン
+ちっちゃい↓を押して上記の動作でクローンを作成
+復旧完了！！
+※ただし、Libraryフォルダのみはコピーしなおす。(変更してたら南無三)
