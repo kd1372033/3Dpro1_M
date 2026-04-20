@@ -66,9 +66,10 @@ void Application::Update()
 {
 	// カメラ制御
 	Math::Matrix _mRot = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(30));
-	Math::Matrix _mWorld =_mRot* Math::Matrix::CreateTranslation(0, 3, -5);
-	
+	Math::Matrix _mWorld = _mRot * Math::Matrix::CreateTranslation(0, 3, -5);//中心座標から少し離れた位置にカメラを配置
+
 	m_spCamera->SetCameraMatrix(_mWorld);
+
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////

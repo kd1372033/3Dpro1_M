@@ -6,21 +6,21 @@
 //============================================================
 class Application
 {
-// メンバ
+	// メンバ
 public:
 
 	// アプリケーション実行
 	void Execute();
 
 	// アプリケーション終了
-	void End()							{ m_endFlag = true; }
+	void End() { m_endFlag = true; }
 
-	HWND GetWindowHandle()		const	{ return m_window.GetWndHandle(); }
-	int GetMouseWheelValue()	const	{ return m_window.GetMouseWheelVal(); }
+	HWND GetWindowHandle()		const { return m_window.GetWndHandle(); }
+	int GetMouseWheelValue()	const { return m_window.GetMouseWheelVal(); }
 
-	int		GetNowFPS()			const	{ return m_fpsController.m_nowfps; }
-	int		GetMaxFPS()			const	{ return m_fpsController.m_maxFps; }
-	float	GetDeltaTime()		const	{ return m_fpsController.GetDeltaTime(); }
+	int		GetNowFPS()			const { return m_fpsController.m_nowfps; }
+	int		GetMaxFPS()			const { return m_fpsController.m_maxFps; }
+	float	GetDeltaTime()		const { return m_fpsController.GetDeltaTime(); }
 private:
 
 	void KdBeginUpdate();
@@ -52,19 +52,19 @@ private:
 	bool		m_endFlag = false;
 
 	//　授業リソース
-	std::shared_ptr<KdSquarePolygon>	m_spPoly	= nullptr;
-	std::shared_ptr<KdModelData>		m_spModel	= nullptr;
-	std::shared_ptr<KdCamera>			m_spCamera	= nullptr;
+	std::shared_ptr<KdSquarePolygon>	m_spPoly = nullptr;
+	std::shared_ptr<KdModelData>		m_spModel = nullptr;
+	std::shared_ptr<KdCamera>			m_spCamera = nullptr;
 
-//=====================================================
-// シングルトンパターン
-//=====================================================
+	//=====================================================
+	// シングルトンパターン
+	//=====================================================
 private:
 	// 
 	Application() {}
 
 public:
-	static Application &Instance(){
+	static Application& Instance() {
 		static Application Instance;
 		return Instance;
 	}
