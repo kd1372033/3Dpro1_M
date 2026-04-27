@@ -56,6 +56,8 @@ private:
 	std::shared_ptr<KdModelData>		m_spModel = nullptr;
 	std::shared_ptr<KdCamera>			m_spCamera = nullptr;
 
+	Math::Matrix						m_HamuWorld = Math::Matrix::Identity;
+
 	//=====================================================
 	// シングルトンパターン
 	//=====================================================

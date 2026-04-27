@@ -65,10 +65,57 @@ void Application::PreUpdate()
 void Application::Update()
 {
 	// カメラ制御
-	Math::Matrix _mRot = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(30));
-	Math::Matrix _mWorld = _mRot * Math::Matrix::CreateTranslation(0, 3, -5);//中心座標から少し離れた位置にカメラを配置
+	{	//スコープ　ローカル変数をこの中だけで有効にできる
+		//	↓ワールド行列
+		// 大きさscale 拡縮行列
+		Math::Matrix _mScale = Math::Matrix::CreateScale(1.0f);
 
-	m_spCamera->SetCameraMatrix(_mWorld);
+		// 回転rotate 回転行列
+		Math::Matrix _mRotation = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(45));
+		// xは上下　、yは左右、zは前後の回転
+
+		// 位置translate 移動行列
+		Math::Matrix _mTrans = Math::Matrix::CreateTranslation(0, 5.0f, -5.0f);
+
+		// 行列の合成　ワールド行列 = 大きさ * 回転 * 位置
+		Math::Matrix _mWorld = _mScale * _mRotation * _mTrans;//w = s * r * t
+
+		m_spCamera->SetCameraMatrix(_mWorld);
+	}
+
+	// キャラ制御
+	{
+		//wasdで移動
+		// キャラ制御
+		{
+			float			_moveSpd = 0.1f;
+			Math::Vector3	_nowPos = m_HamuWorld.Translation();
+
+			Math::Vector3	_moveVec = Math::Vector3::Zero;
+			if (GetAsyncKeyState('W')) { _moveVec.z = 1.0f; }
+			if (GetAsyncKeyState('A')) { _moveVec.x = -1.0f; }
+			if (GetAsyncKeyState('S')) { _moveVec.z = -1.0f; }
+			if (GetAsyncKeyState('D')) { _moveVec.x = 1.0f; }
+			// 正規化(あらゆる矢印の長さを「1.0」にする)
+			_moveVec.Normalize();
+
+			_nowPos += _moveVec * _moveSpd;
+			// キャラクターのワールド行列を作成する
+			m_HamuWorld = Math::Matrix::CreateTranslation(_nowPos);
+		}
+
+		/*	
+		if (GetAsyncKeyState('W') & 0x8000) m_HamuWorld._43 += 0.1f;
+		if (GetAsyncKeyState('A') & 0x8000) m_HamuWorld._41 -= 0.1f;
+		if (GetAsyncKeyState('S') & 0x8000) m_HamuWorld._43 -= 0.1f;
+		if (GetAsyncKeyState('D') & 0x8000) m_HamuWorld._41 += 0.1f;
+
+		Math::Matrix _mScale = Math::Matrix::CreateScale(1.0f);
+		Math::Matrix _mRotation = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(0));
+		Math::Matrix _mTrans = Math::Matrix::CreateTranslation(m_HamuWorld._41, m_HamuWorld._42, m_HamuWorld._43 );
+		m_HamuWorld = _mScale * _mRotation * _mTrans;
+		*/
+	}
 
 }
 
@@ -130,7 +177,7 @@ void Application::Draw()
 	KdShaderManager::Instance().m_StandardShader.BeginLit();
 	{
 		//描画命令
-		KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_spPoly);
+		KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_spPoly, m_HamuWorld);
 		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel);
 
 	}
@@ -261,6 +308,7 @@ bool Application::Init(int w, int h)
 	//===================================================================
 	// カメラ初期化
 	//===================================================================
+	//								↓F12またはCtrl+ダブルクリックで定義に飛べる
 	m_spCamera = std::make_shared<KdCamera>();
 
 	//===================================================================
