@@ -1,10 +1,12 @@
 ﻿#include "main.h"
 
+#include "Scene/SceneManager.h"
+
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 // エントリーポイント
 // アプリケーションはこの関数から進行する
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
-int WINAPI WinMain(_In_ HINSTANCE, _In_opt_  HINSTANCE, _In_ LPSTR, _In_ int)
+int WINAPI WinMain(_In_ HINSTANCE, _In_opt_  HINSTANCE, _In_ LPSTR , _In_ int)
 {
 	// メモリリークを知らせる
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -57,6 +59,7 @@ void Application::KdPostUpdate()
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::PreUpdate()
 {
+	SceneManager::Instance().PreUpdate();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -64,62 +67,7 @@ void Application::PreUpdate()
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::Update()
 {
-	// キャラ制御
-	{
-		//wasdで移動
-		// キャラ制御
-		{
-			float			_moveSpd = 0.1f;
-			Math::Vector3	_nowPos = m_HamuWorld.Translation();
-
-			Math::Vector3	_moveVec = Math::Vector3::Zero;
-			if (GetAsyncKeyState('W')) { _moveVec.z = 1.0f; }
-			if (GetAsyncKeyState('A')) { _moveVec.x = -1.0f; }
-			if (GetAsyncKeyState('S')) { _moveVec.z = -1.0f; }
-			if (GetAsyncKeyState('D')) { _moveVec.x = 1.0f; }
-			// 正規化(あらゆる矢印の長さを「1.0」にする)
-			_moveVec.Normalize();
-
-			_nowPos += _moveVec * _moveSpd;
-			// キャラクターのワールド行列を作成する
-			m_HamuWorld = Math::Matrix::CreateTranslation(_nowPos);
-		}
-
-	}
-
-	// カメラ制御
-	{	//スコープ　ローカル変数をこの中だけで有効にできる
-
-		//	↓ワールド行列
-		// 大きさscale 拡縮行列
-		Math::Matrix _mScale = Math::Matrix::CreateScale(1.0f);
-
-		// 回転rotate 回転行列
-
-		//回転1
-		Math::Matrix _mRotationX = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(45));
-
-		//回転2
-		static int _yAng = 0;
-		Math::Matrix _mRotationY = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(_yAng));
-		_yAng += 1.0f;
-		// xは上下(頭の横に棒を指して回す)　、yは左右(脳天に棒を指して回す)、zは前後(顔面に棒を指して回す)の回転
-
-		// 位置translate 移動行列
-		//Math::Matrix _mTrans = Math::Matrix::CreateTranslation(m_HamuWorld._41, m_HamuWorld._42 + 5.0f, m_HamuWorld._43 - 5.0f);
-		Math::Matrix _mTrans = Math::Matrix::CreateTranslation(0, 5.0f, -5.0f);
-
-		// 行列の合成　ワールド行列 = 大きさ * 回転 * 位置
-		// ↓原点基準			大きさ　見下ろしカメラ　カメラの場所　
-		Math::Matrix _mWorld =( _mScale * _mRotationX * _mTrans * _mRotationY)*m_HamuWorld;
-		//				W =		S(cale) * R1(otation) * T(ranslation) * R2(otation)
-
-		// ハムスターの足元を中心に　(親子関係)
-		//Math::Matrix _mWorld = (_mScale * _mRotation * _mTrans) * m_HamuWorld;
-
-		m_spCamera->SetCameraMatrix(_mWorld);
-	}
-
+	SceneManager::Instance().Update();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -127,6 +75,7 @@ void Application::Update()
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::PostUpdate()
 {
+	SceneManager::Instance().PostUpdate();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -159,8 +108,7 @@ void Application::KdPostDraw()
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::PreDraw()
 {
-
-	m_spCamera->SetToShader();
+	SceneManager::Instance().PreDraw();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -168,40 +116,7 @@ void Application::PreDraw()
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::Draw()
 {
-	// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-	// 光を遮るオブジェクト(不透明な物体や2Dキャラ)はBeginとEndの間にまとめてDrawする
-	KdShaderManager::Instance().m_StandardShader.BeginGenerateDepthMapFromLight();
-	{
-	}
-	KdShaderManager::Instance().m_StandardShader.EndGenerateDepthMapFromLight();
-
-
-	// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-	// 陰影のあるオブジェクト(不透明な物体や2Dキャラ)はBeginとEndの間にまとめてDrawする
-	KdShaderManager::Instance().m_StandardShader.BeginLit();
-	{
-		//描画命令
-		KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_spPoly, m_HamuWorld);
-		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel);
-
-	}
-	KdShaderManager::Instance().m_StandardShader.EndLit();
-
-
-	// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-	// 陰影のないオブジェクト(透明な部分を含む物体やエフェクト)はBeginとEndの間にまとめてDrawする
-	KdShaderManager::Instance().m_StandardShader.BeginUnLit();
-	{
-	}
-	KdShaderManager::Instance().m_StandardShader.EndUnLit();
-
-
-	// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-	// 光源オブジェクト(自ら光るオブジェクトやエフェクト)はBeginとEndの間にまとめてDrawする
-	KdShaderManager::Instance().m_postProcessShader.BeginBright();
-	{
-	}
-	KdShaderManager::Instance().m_postProcessShader.EndBright();
+	SceneManager::Instance().Draw();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -212,12 +127,8 @@ void Application::PostDraw()
 	// 画面のぼかしや被写界深度処理の実施
 	KdShaderManager::Instance().m_postProcessShader.PostEffectProcess();
 
-	// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-	// デバッグ情報の描画はこの間で行う
-	KdShaderManager::Instance().m_StandardShader.BeginUnLit();
-	{
-	}
-	KdShaderManager::Instance().m_StandardShader.EndUnLit();
+	// 現在のシーンのデバッグ描画
+	SceneManager::Instance().DrawDebug();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -229,6 +140,7 @@ void Application::DrawSprite()
 	// 2Dの描画はこの間で行う
 	KdShaderManager::Instance().m_spriteShader.Begin();
 	{
+		SceneManager::Instance().DrawSprite();
 	}
 	KdShaderManager::Instance().m_spriteShader.End();
 }
@@ -250,15 +162,15 @@ bool Application::Init(int w, int h)
 	// フルスクリーン確認
 	//===================================================================
 	bool bFullScreen = false;
-	//	if (MessageBoxA(m_window.GetWndHandle(), "フルスクリーンにしますか？", "確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES) {
-	//		bFullScreen = true;
-	//	}
+//	if (MessageBoxA(m_window.GetWndHandle(), "フルスクリーンにしますか？", "確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES) {
+//		bFullScreen = true;
+//	}
 
-		//===================================================================
-		// Direct3D初期化
-		//===================================================================
+	//===================================================================
+	// Direct3D初期化
+	//===================================================================
 
-		// デバイスのデバッグモードを有効にする
+	// デバイスのデバッグモードを有効にする
 	bool deviceDebugMode = false;
 #ifdef _DEBUG
 	deviceDebugMode = true;
@@ -302,31 +214,12 @@ bool Application::Init(int w, int h)
 	// フォント初期化
 	//===================================================================
 	KdFontManager::Instance().Init(GetWindowHandle());
-
+	
 	//===================================================================
 	// ゲーム固有の初期化
 	//===================================================================
 	// 例えばカーソルを消したい場合
-	ShowCursor(false);
-
-	//===================================================================
-	// カメラ初期化
-	//===================================================================
-	//								↓F12またはCtrl+ダブルクリックで定義に飛べる
-	m_spCamera = std::make_shared<KdCamera>();
-
-	//===================================================================
-	// キャラクター初期化
-	//===================================================================
-	m_spPoly = std::make_shared<KdSquarePolygon>();
-	m_spPoly->SetMaterial("Asset/Data/LessonData/Character/Hamu.png");
-	m_spPoly->SetPivot(KdSquarePolygon::PivotType::Center_Bottom);
-
-	//===================================================================
-	// ステージ初期化
-	//===================================================================
-	m_spModel = std::make_shared<KdModelData>();
-	m_spModel->Load("Asset/Data/LessonData/Terrain/Terrain.gltf");
+	//ShowCursor(false);
 
 	return true;
 }
@@ -382,8 +275,8 @@ void Application::Execute()
 
 		if (GetAsyncKeyState(VK_ESCAPE))
 		{
-			//			if (MessageBoxA(m_window.GetWndHandle(), "本当にゲームを終了しますか？",
-			//				"終了確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+//			if (MessageBoxA(m_window.GetWndHandle(), "本当にゲームを終了しますか？",
+//				"終了確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
 			{
 				End();
 			}
