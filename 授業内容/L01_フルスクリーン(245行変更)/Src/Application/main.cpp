@@ -1,0 +1,455 @@
+﻿#include "main.h"
+
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+// エントリーポイント
+// アプリケーションはこの関数から進行する
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+int WINAPI WinMain(_In_ HINSTANCE, _In_opt_  HINSTANCE, _In_ LPSTR, _In_ int)
+{
+	// メモリリークを知らせる
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+	// COM初期化
+	if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
+	{
+		CoUninitialize();
+
+		return 0;
+	}
+
+	// mbstowcs_s関数で日本語対応にするために呼ぶ
+	setlocale(LC_ALL, "japanese");
+
+	//===================================================================
+	// 実行]
+	//===================================================================
+	Application::Instance().Execute();
+
+	// COM解放
+	CoUninitialize();
+
+	return 0;
+}
+
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+// アプリケーション更新開始
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+void Application::KdBeginUpdate()
+{
+	// 入力状況の更新
+	KdInputManager::Instance().Update();
+
+	// 空間環境の更新
+	KdShaderManager::Instance().WorkAmbientController().Update();
+}
+
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+// アプリケーション更新終了
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+void Application::KdPostUpdate()
+{
+	// 3DSoundListnerの行列を更新
+	KdAudioManager::Instance().SetListnerMatrix(KdShaderManager::Instance().GetCameraCB().mView.Invert());
+}
+
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+// アプリケーション更新の前処理
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+void Application::PreUpdate()
+{
+}
+
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+// アプリケーション更新
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+void Application::Update()
+{
+	// キャラ制御
+	{
+		//wasdで移動
+		// キャラ制御
+		{
+			float			_moveSpd = 0.1f;
+			Math::Vector3	_nowPos = m_HamuWorld.Translation();
+
+			Math::Vector3	_moveVec = Math::Vector3::Zero;
+			if (GetAsyncKeyState('W')) { _moveVec.z = 1.0f; }
+			if (GetAsyncKeyState('A')) { _moveVec.x = -1.0f; }
+			if (GetAsyncKeyState('S')) { _moveVec.z = -1.0f; }
+			if (GetAsyncKeyState('D')) { _moveVec.x = 1.0f; }
+			// 正規化(あらゆる矢印の長さを「1.0」にする)
+			_moveVec.Normalize();
+
+			_nowPos += _moveVec * _moveSpd;
+			// キャラクターのワールド行列を作成する
+			m_HamuWorld = Math::Matrix::CreateTranslation(_nowPos);
+		}
+
+	}
+
+	// カメラ制御
+	{	//スコープ　ローカル変数をこの中だけで有効にできる
+
+		//	↓ワールド行列
+		// 大きさscale 拡縮行列
+		Math::Matrix _mScale = Math::Matrix::CreateScale(1.0f);
+
+		// 回転rotate 回転行列
+
+		//回転1
+		Math::Matrix _mRotationX = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(45));
+
+		//回転2
+		static int _yAng = 0;
+		Math::Matrix _mRotationY = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(_yAng));
+		_yAng += 1.0f;
+		// xは上下(頭の横に棒を指して回す)　、yは左右(脳天に棒を指して回す)、zは前後(顔面に棒を指して回す)の回転
+
+		// 位置translate 移動行列
+		//Math::Matrix _mTrans = Math::Matrix::CreateTranslation(m_HamuWorld._41, m_HamuWorld._42 + 5.0f, m_HamuWorld._43 - 5.0f);
+		Math::Matrix _mTrans = Math::Matrix::CreateTranslation(0, 5.0f, -5.0f);
+
+		// 行列の合成　ワールド行列 = 大きさ * 回転 * 位置
+		// ↓原点基準			大きさ　見下ろしカメラ　カメラの場所　
+		Math::Matrix _mWorld =( _mScale * _mRotationX * _mTrans * _mRotationY)*m_HamuWorld;
+		//				W =		S(cale) * R1(otation) * T(ranslation) * R2(otation)
+
+		// ハムスターの足元を中心に　(親子関係)
+		//Math::Matrix _mWorld = (_mScale * _mRotation * _mTrans) * m_HamuWorld;
+
+		m_spCamera->SetCameraMatrix(_mWorld);
+	}
+
+}
+
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+// アプリケーション更新の後処理
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+void Application::PostUpdate()
+{
+}
+
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+// アプリケーション描画開始
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+void Application::KdBeginDraw(bool usePostProcess)
+{
+	KdDirect3D::Instance().ClearBackBuffer();
+
+	KdShaderManager::Instance().WorkAmbientController().Draw();
+
+	if (!usePostProcess) return;
+	KdShaderManager::Instance().m_postProcessShader.Draw();
+}
+
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+// アプリケーション描画終了
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+void Application::KdPostDraw()
+{
+	// Imguiのレンダリング
+	KdDebugGUI::Instance().GuiProcess();
+
+	// BackBuffer -> 画面表示
+	KdDirect3D::Instance().WorkSwapChain()->Present(0, 0);
+}
+
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+// アプリケーション描画の前処理
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+void Application::PreDraw()
+{
+
+	m_spCamera->SetToShader();
+}
+
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+// アプリケーション描画
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+void Application::Draw()
+{
+	// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+	// 光を遮るオブジェクト(不透明な物体や2Dキャラ)はBeginとEndの間にまとめてDrawする
+	KdShaderManager::Instance().m_StandardShader.BeginGenerateDepthMapFromLight();
+	{
+	}
+	KdShaderManager::Instance().m_StandardShader.EndGenerateDepthMapFromLight();
+
+
+	// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+	// 陰影のあるオブジェクト(不透明な物体や2Dキャラ)はBeginとEndの間にまとめてDrawする
+	KdShaderManager::Instance().m_StandardShader.BeginLit();
+	{
+		//描画命令
+		KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_spPoly, m_HamuWorld);
+		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_spModel);
+
+	}
+	KdShaderManager::Instance().m_StandardShader.EndLit();
+
+
+	// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+	// 陰影のないオブジェクト(透明な部分を含む物体やエフェクト)はBeginとEndの間にまとめてDrawする
+	KdShaderManager::Instance().m_StandardShader.BeginUnLit();
+	{
+	}
+	KdShaderManager::Instance().m_StandardShader.EndUnLit();
+
+
+	// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+	// 光源オブジェクト(自ら光るオブジェクトやエフェクト)はBeginとEndの間にまとめてDrawする
+	KdShaderManager::Instance().m_postProcessShader.BeginBright();
+	{
+	}
+	KdShaderManager::Instance().m_postProcessShader.EndBright();
+}
+
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+// アプリケーション描画の後処理
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+void Application::PostDraw()
+{
+	// 画面のぼかしや被写界深度処理の実施
+	KdShaderManager::Instance().m_postProcessShader.PostEffectProcess();
+
+	// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+	// デバッグ情報の描画はこの間で行う
+	KdShaderManager::Instance().m_StandardShader.BeginUnLit();
+	{
+	}
+	KdShaderManager::Instance().m_StandardShader.EndUnLit();
+}
+
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+// 2Dスプライトの描画
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+void Application::DrawSprite()
+{
+	// ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+	// 2Dの描画はこの間で行う
+	KdShaderManager::Instance().m_spriteShader.Begin();
+	{
+	}
+	KdShaderManager::Instance().m_spriteShader.End();
+}
+
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+// アプリケーション初期設定
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+bool Application::Init(int w, int h)
+{
+	//===================================================================
+	// ウィンドウ作成
+	//===================================================================
+	//第4引数にtrueを追加するとフルスクリーンモード
+	if (m_window.Create(w, h, "3D GameProgramming", "Window") == false) {
+		MessageBoxA(nullptr, "ウィンドウ作成に失敗", "エラー", MB_OK);
+		return false;
+	}
+
+	//===================================================================
+	// フルスクリーン確認
+	//===================================================================
+	bool bFullScreen = false;
+	//	if (MessageBoxA(m_window.GetWndHandle(), "フルスクリーンにしますか？", "確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES) {
+	//		bFullScreen = true;
+	//	}
+
+		//===================================================================
+		// Direct3D初期化
+		//===================================================================
+
+		// デバイスのデバッグモードを有効にする
+	bool deviceDebugMode = false;
+#ifdef _DEBUG
+	deviceDebugMode = true;
+#endif
+
+	// Direct3D初期化
+	std::string errorMsg;
+	if (KdDirect3D::Instance().Init(m_window.GetWndHandle(), w, h, deviceDebugMode, errorMsg) == false) {
+		MessageBoxA(m_window.GetWndHandle(), errorMsg.c_str(), "Direct3D初期化失敗", MB_OK | MB_ICONSTOP);
+		return false;
+	}
+
+	// フルスクリーン設定
+	if (bFullScreen) {
+		HRESULT hr;
+
+		hr = KdDirect3D::Instance().SetFullscreenState(TRUE, 0);
+		if (FAILED(hr))
+		{
+			MessageBoxA(m_window.GetWndHandle(), "フルスクリーン設定失敗", "Direct3D初期化失敗", MB_OK | MB_ICONSTOP);
+			return false;
+		}
+	}
+
+	//===================================================================
+	// imgui初期化
+	//===================================================================
+	KdDebugGUI::Instance().GuiInit(w, h);
+
+	//===================================================================
+	// シェーダー初期化
+	//===================================================================
+	KdShaderManager::Instance().Init();
+
+	//===================================================================
+	// オーディオ初期化
+	//===================================================================
+	KdAudioManager::Instance().Init();
+
+	//===================================================================
+	// フォント初期化
+	//===================================================================
+	KdFontManager::Instance().Init(GetWindowHandle());
+
+	//===================================================================
+	// ゲーム固有の初期化
+	//===================================================================
+	// 例えばカーソルを消したい場合
+	ShowCursor(false);
+
+	//===================================================================
+	// カメラ初期化
+	//===================================================================
+	//								↓F12またはCtrl+ダブルクリックで定義に飛べる
+	m_spCamera = std::make_shared<KdCamera>();
+
+	//===================================================================
+	// キャラクター初期化
+	//===================================================================
+	m_spPoly = std::make_shared<KdSquarePolygon>();
+	m_spPoly->SetMaterial("Asset/Data/LessonData/Character/Hamu.png");
+	m_spPoly->SetPivot(KdSquarePolygon::PivotType::Center_Bottom);
+
+	//===================================================================
+	// ステージ初期化
+	//===================================================================
+	m_spModel = std::make_shared<KdModelData>();
+	m_spModel->Load("Asset/Data/LessonData/Terrain/Terrain.gltf");
+
+	return true;
+}
+
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+// アプリケーション実行
+// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
+void Application::Execute()
+{
+	KdCSVData windowData("Asset/Data/WindowSettings.csv");
+	const std::vector<std::string>& sizeData = windowData.GetLine(0);
+
+	//===================================================================
+	// 初期設定(ウィンドウ作成、Direct3D初期化など)
+	//===================================================================
+	if (Application::Instance().Init(atoi(sizeData[0].c_str()), atoi(sizeData[1].c_str())) == false) {
+		return;
+	}
+
+	//===================================================================
+	// ゲームループ
+	//===================================================================
+
+	// 時間
+	m_fpsController.Init();
+
+	// ループ
+	while (1)
+	{
+		// 処理開始時間Get
+		m_fpsController.UpdateStartTime();
+
+		// ゲーム終了指定があるときはループ終了
+		if (m_endFlag)
+		{
+			break;
+		}
+
+		//=========================================
+		//
+		// ウィンドウ関係の処理
+		//
+		//=========================================
+
+		// ウィンドウのメッセージを処理する
+		m_window.ProcessMessage();
+
+		// ウィンドウが破棄されてるならループ終了
+		if (m_window.IsCreated() == false)
+		{
+			break;
+		}
+
+		if (GetAsyncKeyState(VK_ESCAPE))
+		{
+			//			if (MessageBoxA(m_window.GetWndHandle(), "本当にゲームを終了しますか？",
+			//				"終了確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+			{
+				End();
+			}
+		}
+
+		//=========================================
+		//
+		// アプリケーション更新処理
+		//
+		//=========================================
+
+		KdBeginUpdate();
+		{
+			PreUpdate();
+
+			Update();
+
+			PostUpdate();
+		}
+		KdPostUpdate();
+
+		//=========================================
+		//
+		// アプリケーション描画処理
+		//
+		//=========================================
+
+		KdBeginDraw();
+		{
+			PreDraw();
+
+			Draw();
+
+			PostDraw();
+
+			DrawSprite();
+		}
+		KdPostDraw();
+
+		//=========================================
+		//
+		// フレームレート制御
+		//
+		//=========================================
+
+		m_fpsController.Update();
+	}
+
+	//===================================================================
+	// アプリケーション解放
+	//===================================================================
+	Release();
+}
+
+// アプリケーション終了
+void Application::Release()
+{
+	KdInputManager::Instance().Release();
+
+	KdShaderManager::Instance().Release();
+
+	KdAudioManager::Instance().Release();
+
+	KdDirect3D::Instance().Release();
+
+	// ウィンドウ削除
+	m_window.Release();
+}
