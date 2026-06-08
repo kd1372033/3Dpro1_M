@@ -13,6 +13,7 @@ void GameScene::Event()
 			SceneManager::SceneType::Title
 		);
 	}
+	
 }
 
 void GameScene::Init()
@@ -20,13 +21,14 @@ void GameScene::Init()
 	//===================================================================
 	// カメラの初期化
 	//===================================================================
-	m_camera = std::make_unique<KdCamera>();
+	m_camera = std::make_shared<KdCamera>();
 
 	//===================================================================
 	// キャラクターの初期化
 	//===================================================================
 	std::shared_ptr<Hamu> _hamu = std::make_shared<Hamu>();
 	_hamu->Init();
+	_hamu->SetCamera(m_camera);
 	AddObject(_hamu);
 
 	//===================================================================

@@ -39,7 +39,7 @@ protected :
 	// 解放処理は丁寧に行う事！
 	virtual void Release() = 0;
 	
-	std::unique_ptr<KdCamera> m_camera = nullptr;
+	std::shared_ptr<KdCamera> m_camera = nullptr;
 
 	// 全オブジェクトのアドレスをリストで管理
 	std::list<std::shared_ptr<KdGameObject>> m_objList;

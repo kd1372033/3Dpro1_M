@@ -47,7 +47,15 @@ void Hamu::DrawLit()
 
 void Hamu::DrawSprite()
 {
-	KdShaderManager::Instance().m_spriteShader.DrawCircle(GetPos().x, GetPos().z, 10, &kRedColor);
+	std::shared_ptr<KdCamera> _spCamera = m_wpCamera.lock();
+
+	if (_spCamera)
+	{
+		Math::Vector3 _2dPos = Math::Vector3::Zero;
+		_spCamera->ConvertWorldToScreenDetail(GetPos(), _2dPos);
+		// カメラの情報が必要
+		KdShaderManager::Instance().m_spriteShader.DrawCircle(_2dPos.x, _2dPos.y, 10, &kRedColor);
+	}
 }
 
 void Hamu::Release()
