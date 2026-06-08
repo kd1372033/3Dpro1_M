@@ -23,6 +23,15 @@ void Sky::Init()
 
 void Sky::Update()
 {
+	/*	何気に使っている1はどれぐらいの単位
+		1 = 1mの方が好ましい(というかその方がいい)
+		Blenderは1 = 1mであるため、
+		Blenderで作成したモデルをそのまま読み込むと、
+		1 = 1mの単位で表示される!
+		175cmのプレイヤーは1.75の高さ
+		50mの距離を7秒で移動する場合の１fpsあたりの移動速度は0.11m/fps
+	*/
+
 	m_mRotation *=
 		Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(2.0f));
 
