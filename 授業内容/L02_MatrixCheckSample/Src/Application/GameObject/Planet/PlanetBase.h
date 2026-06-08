@@ -21,7 +21,6 @@ private:
 	void Release();
 
 protected:
-
 	std::shared_ptr<KdModelData>		m_spModel = nullptr;
 	std::weak_ptr<PlanetBase>			m_wpParent;
 

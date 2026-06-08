@@ -79,6 +79,9 @@
     <Filter Include="Src\Application\GameObject\Planet\Earth">
       <UniqueIdentifier>{dffd1317-16a6-40e1-a709-edcdd59c0b6a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\GameObject\Planet\Sky">
+      <UniqueIdentifier>{b045e8d1-b46e-4800-9b1a-86b6ee871497}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -255,6 +258,9 @@
     <ClInclude Include="Src\Application\GameObject\Planet\Sun\Sun.h">
       <Filter>Src\Application\GameObject\Planet\Sun</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GameObject\Planet\Sky\Sky.h">
+      <Filter>Src\Application\GameObject\Planet\Sky</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -400,6 +406,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GameObject\Planet\Sun\Sun.cpp">
       <Filter>Src\Application\GameObject\Planet\Sun</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GameObject\Planet\Sky\Sky.cpp">
+      <Filter>Src\Application\GameObject\Planet\Sky</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
