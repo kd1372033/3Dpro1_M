@@ -17,6 +17,11 @@ public:
 		m_wpCamera = camera;
 	}
 
+	void SetHitObject(std::shared_ptr<KdGameObject> obj)
+	{
+		m_wpHitObj = obj;
+	}
+
 private:
 
 	void Release();
@@ -26,5 +31,7 @@ private:
 
 	// 座標変換に必要な為のカメラの情報
 	std::weak_ptr<KdCamera> m_wpCamera;
+	std::weak_ptr<KdGameObject> m_wpHitObj;
 
+	Math::Vector3 m_TargetPos = Math::Vector3::Zero;
 };
