@@ -60,6 +60,7 @@ void CharacterBase::UpdateCollision()
 	rayInfo.m_type = KdCollider::TypeGround;
 
 	// ②HIT判定対象オブジェクトに総当たり
+	m_wpRiddenObject.reset();
 	for (std::weak_ptr<KdGameObject> wpGameObj : m_wpHitObjectList)
 	{
 		std::shared_ptr<KdGameObject> spGameObj = wpGameObj.lock();
@@ -89,6 +90,27 @@ void CharacterBase::UpdateCollision()
 				// 地面に当たっている
 				SetPos(hitPos);
 				m_Gravity = 0;
+
+				// 逆行列…行列の「今の状態」を打ち消し、「単位行列」とするもの
+				// 行列A * - 行列A = 単位行列
+
+				// 乗り物に乗っている
+				// IsRideableはまだfalse(ground登録時)
+				// IsRideableはtrueになる(lift登録時)
+				if (spGameObj->IsRideable())
+				{
+					// プレイヤーが何の上に乗っているか（「乗り物から見たPlayerのローカル座標」）
+					Math::Matrix _mInvertRideObject;
+					spGameObj->GetMatrix().Invert(_mInvertRideObject);
+					// ↑リフトのワールド行列を逆行列化して_mInvertRideObjectに代入している
+
+					// リフトを原点としたキャラクターのローカル行列 
+					//			= キャラクターのワールド行列(H) * リフトの逆行列(-L)
+					// リフトの原点を強制的に(0,0,0)にして、そこから見たキャラクターの座標に変える
+					m_mLocalFromRideObject = m_mWorld * _mInvertRideObject;
+					m_wpRiddenObject = spGameObj;
+					// 乗り物の座標を保存しておく
+				}
 			}
 		}
 	}

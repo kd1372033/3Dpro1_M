@@ -29,4 +29,7 @@ protected:
 	std::vector<std::weak_ptr<KdGameObject>>	m_wpHitObjectList{};
 	float										m_Gravity = 0;
 
+	// 乗り物制御関係
+	Math::Matrix m_mLocalFromRideObject;
+	std::weak_ptr<KdGameObject> m_wpRiddenObject;
 };

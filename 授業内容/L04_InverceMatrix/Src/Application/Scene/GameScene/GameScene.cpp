@@ -2,8 +2,9 @@
 #include"../SceneManager.h"
 
 #include "../../GameObject/Stage/Stage01/Stage01.h"
-#include "../../GameObject/Character/Player/Player.h"
 #include "../../GameObject/Stage/Lift/Lift.h"
+
+#include "../../GameObject/Character/Player/Player.h"
 
 #include "../../GameObject/Camera/TPSCamera/TPSCamera.h"
 
