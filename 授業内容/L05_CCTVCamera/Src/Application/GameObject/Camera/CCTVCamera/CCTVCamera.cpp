@@ -14,84 +14,103 @@ void CCTVCamera::Init()
 
 void CCTVCamera::PostUpdate()
 {
-	// ターゲット（自機）の取得
-	const std::shared_ptr<const KdGameObject> _spTarget = m_wpTarget.lock();
-	if (!_spTarget) return;
-
-	Math::Vector3 playerPos = _spTarget->GetPos();
-
-	// -------------------------------------------------------------
-	// 【初回フレーム同期】自機の位置に追従座標を合わせる
-	// -------------------------------------------------------------
-	if (!m_isInitialized)
+	// ハムスターを「常に」捕らえ続けるカメラ挙動を実装せよ！
+	Math::Matrix _targetMat = Math::Matrix::Identity;
+	std::shared_ptr<KdGameObject> _spTarget = m_wpTarget.lock();
+	if (_spTarget)
 	{
-		m_targetFollowPos = playerPos;
-		m_isInitialized = true;
+		// てめぇの座標寄越しやがれ
+		_targetMat = _spTarget->GetMatrix();
 	}
 
-	// -------------------------------------------------------------
-	// 1. 3D空間上でのデッドゾーン（追従枠）の計算
-	// -------------------------------------------------------------
-	// 自機が注視点（m_targetFollowPos）からこの距離（limit）以上離れたら、
-	// 注視点が引っ張られて動くようにします。
-	const float limitX = 5.5f; // 左右の許容範囲（小さいほどカメラがすぐ動く）
-	const float limitY = 3.0f; // 上下の許容範囲
-	const float limitZ = 7.0f; // 【追加】前後の許容範囲（斜め移動や奥への移動用）
-
-	// 現在の注視点から見た、自機の相対位置
-	Math::Vector3 relativePos = playerPos - m_targetFollowPos;
-
-	// --- 左右（X軸）のハミ出しをチェックし、注視点をずらす ---
-	if (relativePos.x > limitX)
-	{
-		m_targetFollowPos.x += (relativePos.x - limitX);
-	}
-	else if (relativePos.x < -limitX)
-	{
-		m_targetFollowPos.x += (relativePos.x + limitX);
-	}
-
-	// --- 上下（Y軸）のハミ出しをチェックし、注視点をずらす ---
-	// ※ジャンプや落下などの上下動に対応します
-	if (relativePos.y > limitY)
-	{
-		m_targetFollowPos.y += (relativePos.y - limitY);
-	}
-	else if (relativePos.y < -limitY)
-	{
-		m_targetFollowPos.y += (relativePos.y + limitY);
-	}
-
-	// --- 前後（Z軸）のハミ出しをチェックし、注視点をずらす ---
-	// ※以前は `m_targetFollowPos.z = playerPos.z;` と直接同期していましたが、
-	//  これだと「前後だけはデッドゾーンを無視して即座についていく」状態になり、
-	//  斜めカメラの構造上、上下方向の遊び（limitY）の挙動を邪魔してしまうことがあります。
-	//  前後（Z軸）も同様にデッドゾーンで制御することで、上下左右すべてのスクロールが滑らかに連動します。
-	if (relativePos.z > limitZ)
-	{
-		m_targetFollowPos.z += (relativePos.z - limitZ);
-	}
-	else if (relativePos.z < -limitZ)
-	{
-		m_targetFollowPos.z += (relativePos.z + limitZ);
-	}
-
-	// -------------------------------------------------------------
-	// 2. 元々完全に動いていた「行列の掛け算方式」でカメラのワールド行列を作成
-	// -------------------------------------------------------------
-	// 45度の下向き回転
-	Math::Matrix _rot = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(45));
-
-	// 補正された「注視目標点」の平行移動行列を作る
-	Math::Matrix targetTrans = Math::Matrix::CreateTranslation(m_targetFollowPos);
-
-	// 【重要】元々動いていたコードと全く同じ順序で掛け合わせる
-	// これにより、バグる原因になっていた LookAt や Invert() を完全に排除します
-	m_mWorld = _rot * m_mLocalPos * targetTrans;
-
-	// 3. 親クラスが持つ KdCamera オブジェクトに行列を書き戻す
-	if (m_spCamera)
-	{
-		m_spCamera->SetCameraMatrix(m_mWorld);
-	}
+	UpdateLookAtRotate(_targetMat.Translation());
 }
+
+void CCTVCamera::UpdateLookAtRotate(const Math::Vector3& targetPos)
+{
+	/*
+	// 実装方法①　自力ですごい頑張る処理
+	// 自分の向いている「前」方向ベクトル
+	// 正しいのはForwardだけどシステム上Backwardが正しい
+	Math::Vector3 _nowDir = GetMatrix().Backward();
+
+	// ターゲット（ハムスター）への方向ベクトル
+	Math::Vector3 _targetDir = targetPos - GetPos();
+
+	// XM平面上での方向ベクトルとする
+	_nowDir.y = 0;
+	_nowDir.Normalize();
+	_targetDir.y = 0;
+	_targetDir.Normalize();
+
+	// ①今向いている方向の「ワールド角度」を求める
+	float _nowAng = atan2(_nowDir.x, _nowDir.z);
+	_nowAng = DirectX::XMConvertToDegrees(_nowAng);
+
+	// ②ターゲットへ向く「ワールド角度」を求める
+	float _targetAng = atan2(_targetDir.x, _targetDir.z);
+	_targetAng = DirectX::XMConvertToDegrees(_targetAng);
+
+	// ①と②の間の角度を求める
+	float _betweenAng = _targetAng - _nowAng;
+
+	// 180どの位置で角度の数値の切れ目
+	if (_betweenAng > 180)
+	{
+		_betweenAng -= 360;
+	}
+	else if (_betweenAng < -180)
+	{
+		_betweenAng += 360;
+	}
+
+	// 1フレームで最大何度傾くか
+	float _rotateAng = std::clamp(_betweenAng, -1.0f, 1.0f);
+
+	// カメラの角度の更新
+	Math::Matrix _tmpRotation = Math::Matrix::Identity;
+	m_DegAng.y += _rotateAng;
+	_tmpRotation = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_DegAng.y));
+
+	Math::Matrix _tmpWorld = _tmpRotation * Math::Matrix::CreateTranslation(GetPos());
+	_tmpWorld = _tmpWorld.Invert();
+
+	Math::Vector3 _targetLocalPos;
+	_targetLocalPos = Math::Vector3::Transform(targetPos, _tmpWorld);
+
+	_targetLocalPos.x = 0;
+	float _nowAngY = asin(_targetLocalPos.y / _targetLocalPos.Length());
+
+	// 最終的な回転行列を生成する
+	m_mRotation = Math::Matrix::CreateRotationX(-_nowAngY) * _tmpRotation;
+	m_mWorld = m_mRotation * m_mLocalPos;
+	*/
+
+	// 実装方法②　計算が良くわからないけどまぁなんとなく分かる処理
+	Math::Vector3 _targetVec = Math::Vector3::Zero;
+	_targetVec = targetPos - GetPos();
+
+	// YAW角
+	float _yaw = DirectX::XMConvertToDegrees(atan2(_targetVec.x, _targetVec.z));
+	// PITCH角
+	float _pitch = DirectX::XMConvertToDegrees(
+		atan2(_targetVec.y, sqrt(pow(_targetVec.x, 2) + pow(_targetVec.z, 2))));
+
+	/*
+	// ② - ①(ローカルで回転行列を作って合成するパターン)
+	Math::Matrix _RotationX = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(-_pitch));
+	Math::Matrix _RotationY = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(_yaw));
+	m_mWorld = _RotationX * _RotationY * m_mLocalPos;
+	*/
+
+	/*
+	// ② - ②(カメラクラス内の回転行列生成関数を利用するパターン)
+	m_DegAng = Math::Vector3::Zero;
+	m_DegAng.x = -_pitch;
+	m_DegAng.y = _yaw;
+	m_mWorld = GetRotationMatrix() * m_mLocalPos;
+	*/
+
+	// 実装方法③
+}
+
