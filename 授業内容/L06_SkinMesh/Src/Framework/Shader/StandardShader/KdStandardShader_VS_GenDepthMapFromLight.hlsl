@@ -32,6 +32,7 @@ VSOutputGenShadow main(
 		pos = mul(pos, mBones);
 		normal = mul(normal, (float3x3) mBones);
 	}
+	
 // <----------------スキニング
 	
 	VSOutputGenShadow Out;
