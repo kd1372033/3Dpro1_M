@@ -5,15 +5,15 @@ void Player::Init()
 {
 	if (!m_spModel)
 	{
-//		m_spModel = std::make_shared<KdModelWork>();
-//		m_spModel->SetModelData("Asset/Data/LessonData/Character/Robot/Robot.gltf");
-//		m_spAnimator = std::make_shared<KdAnimator>();
-//		m_spAnimator->SetAnimation(m_spModel->GetAnimation("Walk"));
-
 		m_spModel = std::make_shared<KdModelWork>();
-		m_spModel->SetModelData("Asset/Data/LessonData/Character/SkinMeshMan/SkinMeshMan.gltf");
+		m_spModel->SetModelData("Asset/Data/LessonData/Character/Robot/Robot.gltf");
 		m_spAnimator = std::make_shared<KdAnimator>();
-		m_spAnimator->SetAnimation(m_spModel->GetAnimation("Walk"));
+		m_spAnimator->SetAnimation(m_spModel->GetAnimation("Walk_Head"));
+
+		//		m_spModel = std::make_shared<KdModelWork>();
+		//		m_spModel->SetModelData("Asset/Data/LessonData/Character/SkinMeshMan/SkinMeshMan.gltf");
+		//		m_spAnimator = std::make_shared<KdAnimator>();
+		//		m_spAnimator->SetAnimation(m_spModel->GetAnimation("Walk"));
 	}
 
 	SetPos({ 0.0f, 0.0f, 0.0f });
@@ -48,4 +48,21 @@ void Player::Update()
 	// 親クラスのUpdate()を呼び出し
 	// ↓中でやってることは行列の更新処理
 	CharacterBase::Update();
+}
+
+// 描画
+void Player::DrawLit()
+{
+	if (m_spModel)
+	{
+		// 通常描画
+		CharacterBase::DrawLit();
+
+		// アウトラインを描画するために２回描画している
+		KdShaderManager::Instance().
+			m_StandardShader.SetEnableOutLineDraw(true);
+
+		KdShaderManager::Instance().
+			m_StandardShader.DrawModel(*m_spModel, m_mWorld);
+	}
 }

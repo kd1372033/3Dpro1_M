@@ -247,9 +247,27 @@ void KdStandardShader::DrawModel(KdModelWork& rModel, const Math::Matrix& mWorld
 	// 全描画用メッシュノードを描画
 	for (auto& nodeIdx : data->GetDrawMeshNodeIndices())
 	{
+		// 9/14追加
+		// 輪郭描画チェック(アウトライン対応)
+		bool _enableOutLine = GetOutLineDraw();
+
+		if (_enableOutLine)
+		{
+			// 表面をカリング(非表示)にするラスタライザステートをセット
+			KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullFront);
+		}
+		// =====================================================================================
+
 		// 描画
 		DrawMesh(dataNodes[nodeIdx].m_spMesh.get(), workNodes[nodeIdx].m_worldTransform * mWorld,
 			data->GetMaterials(), colRate, emissive);
+
+		// 9/14
+		if (_enableOutLine)
+		{
+			// ラスタライザステートをリセット
+			KdShaderManager::Instance().UndoRasterizerState();
+		}
 	}
 
 	// 定数に変更があった場合は自動的に初期状態に戻す

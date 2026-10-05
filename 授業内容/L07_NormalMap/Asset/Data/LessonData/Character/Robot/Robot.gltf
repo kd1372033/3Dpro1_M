@@ -1,6 +1,6 @@
 {
 	"asset":{
-		"generator":"Khronos glTF Blender I/O v3.6.28",
+		"generator":"Khronos glTF Blender I/O v5.1.19",
 		"version":"2.0"
 	},
 	"scene":0,
@@ -130,100 +130,9 @@
 						"node":0,
 						"path":"rotation"
 					}
-				},
-				{
-					"sampler":2,
-					"target":{
-						"node":1,
-						"path":"translation"
-					}
-				},
-				{
-					"sampler":3,
-					"target":{
-						"node":1,
-						"path":"rotation"
-					}
-				},
-				{
-					"sampler":4,
-					"target":{
-						"node":2,
-						"path":"translation"
-					}
-				},
-				{
-					"sampler":5,
-					"target":{
-						"node":2,
-						"path":"rotation"
-					}
-				},
-				{
-					"sampler":6,
-					"target":{
-						"node":3,
-						"path":"translation"
-					}
-				},
-				{
-					"sampler":7,
-					"target":{
-						"node":3,
-						"path":"rotation"
-					}
-				},
-				{
-					"sampler":8,
-					"target":{
-						"node":3,
-						"path":"scale"
-					}
-				},
-				{
-					"sampler":9,
-					"target":{
-						"node":4,
-						"path":"translation"
-					}
-				},
-				{
-					"sampler":10,
-					"target":{
-						"node":4,
-						"path":"rotation"
-					}
-				},
-				{
-					"sampler":11,
-					"target":{
-						"node":4,
-						"path":"scale"
-					}
-				},
-				{
-					"sampler":12,
-					"target":{
-						"node":6,
-						"path":"translation"
-					}
-				},
-				{
-					"sampler":13,
-					"target":{
-						"node":6,
-						"path":"rotation"
-					}
-				},
-				{
-					"sampler":14,
-					"target":{
-						"node":6,
-						"path":"scale"
-					}
 				}
 			],
-			"name":"Stand",
+			"name":"Stand_Body",
 			"samplers":[
 				{
 					"input":28,
@@ -234,71 +143,6 @@
 					"input":28,
 					"interpolation":"LINEAR",
 					"output":30
-				},
-				{
-					"input":28,
-					"interpolation":"LINEAR",
-					"output":31
-				},
-				{
-					"input":28,
-					"interpolation":"LINEAR",
-					"output":32
-				},
-				{
-					"input":28,
-					"interpolation":"LINEAR",
-					"output":33
-				},
-				{
-					"input":28,
-					"interpolation":"LINEAR",
-					"output":34
-				},
-				{
-					"input":35,
-					"interpolation":"STEP",
-					"output":36
-				},
-				{
-					"input":37,
-					"interpolation":"LINEAR",
-					"output":38
-				},
-				{
-					"input":35,
-					"interpolation":"STEP",
-					"output":39
-				},
-				{
-					"input":35,
-					"interpolation":"STEP",
-					"output":40
-				},
-				{
-					"input":37,
-					"interpolation":"LINEAR",
-					"output":41
-				},
-				{
-					"input":35,
-					"interpolation":"STEP",
-					"output":42
-				},
-				{
-					"input":35,
-					"interpolation":"STEP",
-					"output":43
-				},
-				{
-					"input":37,
-					"interpolation":"LINEAR",
-					"output":44
-				},
-				{
-					"input":35,
-					"interpolation":"STEP",
-					"output":45
 				}
 			]
 		},
@@ -324,204 +168,430 @@
 						"node":0,
 						"path":"scale"
 					}
+				}
+			],
+			"name":"Walk_Body",
+			"samplers":[
+				{
+					"input":31,
+					"interpolation":"LINEAR",
+					"output":32
 				},
 				{
-					"sampler":3,
+					"input":31,
+					"interpolation":"LINEAR",
+					"output":33
+				},
+				{
+					"input":34,
+					"interpolation":"STEP",
+					"output":35
+				}
+			]
+		},
+		{
+			"channels":[
+				{
+					"sampler":0,
 					"target":{
 						"node":1,
 						"path":"translation"
 					}
 				},
 				{
-					"sampler":4,
+					"sampler":1,
+					"target":{
+						"node":1,
+						"path":"rotation"
+					}
+				}
+			],
+			"name":"Stand_Leg.L",
+			"samplers":[
+				{
+					"input":28,
+					"interpolation":"LINEAR",
+					"output":36
+				},
+				{
+					"input":28,
+					"interpolation":"LINEAR",
+					"output":30
+				}
+			]
+		},
+		{
+			"channels":[
+				{
+					"sampler":0,
+					"target":{
+						"node":1,
+						"path":"translation"
+					}
+				},
+				{
+					"sampler":1,
 					"target":{
 						"node":1,
 						"path":"rotation"
 					}
 				},
 				{
-					"sampler":5,
+					"sampler":2,
 					"target":{
 						"node":1,
 						"path":"scale"
 					}
+				}
+			],
+			"name":"Walk_Leg.L",
+			"samplers":[
+				{
+					"input":31,
+					"interpolation":"LINEAR",
+					"output":37
 				},
 				{
-					"sampler":6,
+					"input":31,
+					"interpolation":"LINEAR",
+					"output":38
+				},
+				{
+					"input":34,
+					"interpolation":"STEP",
+					"output":39
+				}
+			]
+		},
+		{
+			"channels":[
+				{
+					"sampler":0,
 					"target":{
 						"node":2,
 						"path":"translation"
 					}
 				},
 				{
-					"sampler":7,
+					"sampler":1,
+					"target":{
+						"node":2,
+						"path":"rotation"
+					}
+				}
+			],
+			"name":"Stand_Leg.R",
+			"samplers":[
+				{
+					"input":28,
+					"interpolation":"LINEAR",
+					"output":40
+				},
+				{
+					"input":28,
+					"interpolation":"LINEAR",
+					"output":30
+				}
+			]
+		},
+		{
+			"channels":[
+				{
+					"sampler":0,
+					"target":{
+						"node":2,
+						"path":"translation"
+					}
+				},
+				{
+					"sampler":1,
 					"target":{
 						"node":2,
 						"path":"rotation"
 					}
 				},
 				{
-					"sampler":8,
+					"sampler":2,
 					"target":{
 						"node":2,
 						"path":"scale"
 					}
+				}
+			],
+			"name":"Walk_Leg.R",
+			"samplers":[
+				{
+					"input":31,
+					"interpolation":"LINEAR",
+					"output":41
 				},
 				{
-					"sampler":9,
+					"input":31,
+					"interpolation":"LINEAR",
+					"output":42
+				},
+				{
+					"input":34,
+					"interpolation":"STEP",
+					"output":39
+				}
+			]
+		},
+		{
+			"channels":[
+				{
+					"sampler":0,
 					"target":{
 						"node":3,
 						"path":"translation"
 					}
 				},
 				{
-					"sampler":10,
+					"sampler":1,
 					"target":{
 						"node":3,
 						"path":"rotation"
 					}
 				},
 				{
-					"sampler":11,
+					"sampler":2,
 					"target":{
 						"node":3,
 						"path":"scale"
 					}
+				}
+			],
+			"name":"Stand_Arm.L",
+			"samplers":[
+				{
+					"input":43,
+					"interpolation":"STEP",
+					"output":44
 				},
 				{
-					"sampler":12,
+					"input":45,
+					"interpolation":"LINEAR",
+					"output":46
+				},
+				{
+					"input":43,
+					"interpolation":"STEP",
+					"output":39
+				}
+			]
+		},
+		{
+			"channels":[
+				{
+					"sampler":0,
+					"target":{
+						"node":3,
+						"path":"translation"
+					}
+				},
+				{
+					"sampler":1,
+					"target":{
+						"node":3,
+						"path":"rotation"
+					}
+				},
+				{
+					"sampler":2,
+					"target":{
+						"node":3,
+						"path":"scale"
+					}
+				}
+			],
+			"name":"Walk_Arm.L",
+			"samplers":[
+				{
+					"input":31,
+					"interpolation":"LINEAR",
+					"output":47
+				},
+				{
+					"input":31,
+					"interpolation":"LINEAR",
+					"output":42
+				},
+				{
+					"input":34,
+					"interpolation":"STEP",
+					"output":39
+				}
+			]
+		},
+		{
+			"channels":[
+				{
+					"sampler":0,
 					"target":{
 						"node":4,
 						"path":"translation"
 					}
 				},
 				{
-					"sampler":13,
+					"sampler":1,
 					"target":{
 						"node":4,
 						"path":"rotation"
 					}
 				},
 				{
-					"sampler":14,
+					"sampler":2,
 					"target":{
 						"node":4,
 						"path":"scale"
 					}
+				}
+			],
+			"name":"Stand_Head",
+			"samplers":[
+				{
+					"input":43,
+					"interpolation":"STEP",
+					"output":48
 				},
 				{
-					"sampler":15,
+					"input":45,
+					"interpolation":"LINEAR",
+					"output":49
+				},
+				{
+					"input":43,
+					"interpolation":"STEP",
+					"output":39
+				}
+			]
+		},
+		{
+			"channels":[
+				{
+					"sampler":0,
+					"target":{
+						"node":4,
+						"path":"translation"
+					}
+				},
+				{
+					"sampler":1,
+					"target":{
+						"node":4,
+						"path":"rotation"
+					}
+				},
+				{
+					"sampler":2,
+					"target":{
+						"node":4,
+						"path":"scale"
+					}
+				}
+			],
+			"name":"Walk_Head",
+			"samplers":[
+				{
+					"input":31,
+					"interpolation":"LINEAR",
+					"output":50
+				},
+				{
+					"input":34,
+					"interpolation":"STEP",
+					"output":51
+				},
+				{
+					"input":34,
+					"interpolation":"STEP",
+					"output":39
+				}
+			]
+		},
+		{
+			"channels":[
+				{
+					"sampler":0,
 					"target":{
 						"node":6,
 						"path":"translation"
 					}
 				},
 				{
-					"sampler":16,
+					"sampler":1,
 					"target":{
 						"node":6,
 						"path":"rotation"
 					}
 				},
 				{
-					"sampler":17,
+					"sampler":2,
 					"target":{
 						"node":6,
 						"path":"scale"
 					}
 				}
 			],
-			"name":"Walk",
+			"name":"Stand_Arm.R",
 			"samplers":[
 				{
-					"input":46,
-					"interpolation":"LINEAR",
-					"output":47
-				},
-				{
-					"input":46,
-					"interpolation":"LINEAR",
-					"output":48
-				},
-				{
-					"input":49,
+					"input":43,
 					"interpolation":"STEP",
-					"output":50
-				},
-				{
-					"input":46,
-					"interpolation":"LINEAR",
-					"output":51
-				},
-				{
-					"input":46,
-					"interpolation":"LINEAR",
 					"output":52
 				},
 				{
-					"input":49,
-					"interpolation":"STEP",
+					"input":45,
+					"interpolation":"LINEAR",
 					"output":53
 				},
 				{
-					"input":46,
+					"input":43,
+					"interpolation":"STEP",
+					"output":39
+				}
+			]
+		},
+		{
+			"channels":[
+				{
+					"sampler":0,
+					"target":{
+						"node":6,
+						"path":"translation"
+					}
+				},
+				{
+					"sampler":1,
+					"target":{
+						"node":6,
+						"path":"rotation"
+					}
+				},
+				{
+					"sampler":2,
+					"target":{
+						"node":6,
+						"path":"scale"
+					}
+				}
+			],
+			"name":"Walk_Arm.R",
+			"samplers":[
+				{
+					"input":31,
 					"interpolation":"LINEAR",
 					"output":54
 				},
 				{
-					"input":46,
+					"input":31,
 					"interpolation":"LINEAR",
-					"output":55
+					"output":38
 				},
 				{
-					"input":49,
+					"input":34,
 					"interpolation":"STEP",
-					"output":56
-				},
-				{
-					"input":46,
-					"interpolation":"LINEAR",
-					"output":57
-				},
-				{
-					"input":46,
-					"interpolation":"LINEAR",
-					"output":58
-				},
-				{
-					"input":49,
-					"interpolation":"STEP",
-					"output":59
-				},
-				{
-					"input":46,
-					"interpolation":"LINEAR",
-					"output":60
-				},
-				{
-					"input":49,
-					"interpolation":"STEP",
-					"output":61
-				},
-				{
-					"input":49,
-					"interpolation":"STEP",
-					"output":62
-				},
-				{
-					"input":46,
-					"interpolation":"LINEAR",
-					"output":63
-				},
-				{
-					"input":46,
-					"interpolation":"LINEAR",
-					"output":64
-				},
-				{
-					"input":49,
-					"interpolation":"STEP",
-					"output":65
+					"output":39
 				}
 			]
 		}
@@ -933,61 +1003,61 @@
 		{
 			"bufferView":31,
 			"componentType":5126,
-			"count":1,
-			"type":"VEC3"
+			"count":41,
+			"max":[
+				0.6666666666666666
+			],
+			"min":[
+				0
+			],
+			"type":"SCALAR"
 		},
 		{
 			"bufferView":32,
 			"componentType":5126,
-			"count":1,
-			"type":"VEC4"
+			"count":41,
+			"type":"VEC3"
 		},
 		{
 			"bufferView":33,
 			"componentType":5126,
-			"count":1,
-			"type":"VEC3"
+			"count":41,
+			"type":"VEC4"
 		},
 		{
 			"bufferView":34,
 			"componentType":5126,
-			"count":1,
-			"type":"VEC4"
+			"count":2,
+			"max":[
+				0.6666666666666666
+			],
+			"min":[
+				0
+			],
+			"type":"SCALAR"
 		},
 		{
 			"bufferView":35,
 			"componentType":5126,
 			"count":2,
-			"max":[
-				0.6666666666666666
-			],
-			"min":[
-				0.016666666666666666
-			],
-			"type":"SCALAR"
+			"type":"VEC3"
 		},
 		{
 			"bufferView":36,
 			"componentType":5126,
-			"count":2,
+			"count":1,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":37,
 			"componentType":5126,
-			"count":40,
-			"max":[
-				0.6666666666666666
-			],
-			"min":[
-				0.016666666666666666
-			],
-			"type":"SCALAR"
+			"count":41,
+			"type":"VEC3"
 		},
 		{
 			"bufferView":38,
 			"componentType":5126,
-			"count":40,
+			"count":41,
 			"type":"VEC4"
 		},
 		{
@@ -999,50 +1069,56 @@
 		{
 			"bufferView":40,
 			"componentType":5126,
-			"count":2,
+			"count":1,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":41,
 			"componentType":5126,
-			"count":40,
-			"type":"VEC4"
+			"count":41,
+			"type":"VEC3"
 		},
 		{
 			"bufferView":42,
 			"componentType":5126,
-			"count":2,
-			"type":"VEC3"
+			"count":41,
+			"type":"VEC4"
 		},
 		{
 			"bufferView":43,
 			"componentType":5126,
 			"count":2,
-			"type":"VEC3"
+			"max":[
+				0.6666666666666666
+			],
+			"min":[
+				0.016666666666666666
+			],
+			"type":"SCALAR"
 		},
 		{
 			"bufferView":44,
-			"componentType":5126,
-			"count":40,
-			"type":"VEC4"
-		},
-		{
-			"bufferView":45,
 			"componentType":5126,
 			"count":2,
 			"type":"VEC3"
 		},
 		{
-			"bufferView":46,
+			"bufferView":45,
 			"componentType":5126,
-			"count":41,
+			"count":40,
 			"max":[
 				0.6666666666666666
 			],
 			"min":[
-				0
+				0.016666666666666666
 			],
 			"type":"SCALAR"
+		},
+		{
+			"bufferView":46,
+			"componentType":5126,
+			"count":40,
+			"type":"VEC4"
 		},
 		{
 			"bufferView":47,
@@ -1053,115 +1129,43 @@
 		{
 			"bufferView":48,
 			"componentType":5126,
-			"count":41,
-			"type":"VEC4"
+			"count":2,
+			"type":"VEC3"
 		},
 		{
 			"bufferView":49,
 			"componentType":5126,
-			"count":2,
-			"max":[
-				0.6666666666666666
-			],
-			"min":[
-				0
-			],
-			"type":"SCALAR"
+			"count":40,
+			"type":"VEC4"
 		},
 		{
 			"bufferView":50,
 			"componentType":5126,
-			"count":2,
+			"count":41,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":51,
 			"componentType":5126,
-			"count":41,
-			"type":"VEC3"
+			"count":2,
+			"type":"VEC4"
 		},
 		{
 			"bufferView":52,
 			"componentType":5126,
-			"count":41,
-			"type":"VEC4"
+			"count":2,
+			"type":"VEC3"
 		},
 		{
 			"bufferView":53,
 			"componentType":5126,
-			"count":2,
-			"type":"VEC3"
+			"count":40,
+			"type":"VEC4"
 		},
 		{
 			"bufferView":54,
 			"componentType":5126,
 			"count":41,
-			"type":"VEC3"
-		},
-		{
-			"bufferView":55,
-			"componentType":5126,
-			"count":41,
-			"type":"VEC4"
-		},
-		{
-			"bufferView":56,
-			"componentType":5126,
-			"count":2,
-			"type":"VEC3"
-		},
-		{
-			"bufferView":57,
-			"componentType":5126,
-			"count":41,
-			"type":"VEC3"
-		},
-		{
-			"bufferView":58,
-			"componentType":5126,
-			"count":41,
-			"type":"VEC4"
-		},
-		{
-			"bufferView":59,
-			"componentType":5126,
-			"count":2,
-			"type":"VEC3"
-		},
-		{
-			"bufferView":60,
-			"componentType":5126,
-			"count":41,
-			"type":"VEC3"
-		},
-		{
-			"bufferView":61,
-			"componentType":5126,
-			"count":2,
-			"type":"VEC4"
-		},
-		{
-			"bufferView":62,
-			"componentType":5126,
-			"count":2,
-			"type":"VEC3"
-		},
-		{
-			"bufferView":63,
-			"componentType":5126,
-			"count":41,
-			"type":"VEC3"
-		},
-		{
-			"bufferView":64,
-			"componentType":5126,
-			"count":41,
-			"type":"VEC4"
-		},
-		{
-			"bufferView":65,
-			"componentType":5126,
-			"count":2,
 			"type":"VEC3"
 		}
 	],
@@ -1351,178 +1355,123 @@
 		},
 		{
 			"buffer":0,
-			"byteLength":12,
+			"byteLength":164,
 			"byteOffset":5212
 		},
 		{
 			"buffer":0,
-			"byteLength":16,
-			"byteOffset":5224
+			"byteLength":492,
+			"byteOffset":5376
+		},
+		{
+			"buffer":0,
+			"byteLength":656,
+			"byteOffset":5868
+		},
+		{
+			"buffer":0,
+			"byteLength":8,
+			"byteOffset":6524
+		},
+		{
+			"buffer":0,
+			"byteLength":24,
+			"byteOffset":6532
 		},
 		{
 			"buffer":0,
 			"byteLength":12,
-			"byteOffset":5240
+			"byteOffset":6556
 		},
 		{
 			"buffer":0,
-			"byteLength":16,
-			"byteOffset":5252
+			"byteLength":492,
+			"byteOffset":6568
 		},
 		{
 			"buffer":0,
-			"byteLength":8,
-			"byteOffset":5268
+			"byteLength":656,
+			"byteOffset":7060
 		},
 		{
 			"buffer":0,
 			"byteLength":24,
-			"byteOffset":5276
+			"byteOffset":7716
+		},
+		{
+			"buffer":0,
+			"byteLength":12,
+			"byteOffset":7740
+		},
+		{
+			"buffer":0,
+			"byteLength":492,
+			"byteOffset":7752
+		},
+		{
+			"buffer":0,
+			"byteLength":656,
+			"byteOffset":8244
+		},
+		{
+			"buffer":0,
+			"byteLength":8,
+			"byteOffset":8900
+		},
+		{
+			"buffer":0,
+			"byteLength":24,
+			"byteOffset":8908
 		},
 		{
 			"buffer":0,
 			"byteLength":160,
-			"byteOffset":5300
+			"byteOffset":8932
 		},
 		{
 			"buffer":0,
 			"byteLength":640,
-			"byteOffset":5460
+			"byteOffset":9092
+		},
+		{
+			"buffer":0,
+			"byteLength":492,
+			"byteOffset":9732
 		},
 		{
 			"buffer":0,
 			"byteLength":24,
-			"byteOffset":6100
-		},
-		{
-			"buffer":0,
-			"byteLength":24,
-			"byteOffset":6124
+			"byteOffset":10224
 		},
 		{
 			"buffer":0,
 			"byteLength":640,
-			"byteOffset":6148
-		},
-		{
-			"buffer":0,
-			"byteLength":24,
-			"byteOffset":6788
-		},
-		{
-			"buffer":0,
-			"byteLength":24,
-			"byteOffset":6812
-		},
-		{
-			"buffer":0,
-			"byteLength":640,
-			"byteOffset":6836
-		},
-		{
-			"buffer":0,
-			"byteLength":24,
-			"byteOffset":7476
-		},
-		{
-			"buffer":0,
-			"byteLength":164,
-			"byteOffset":7500
+			"byteOffset":10248
 		},
 		{
 			"buffer":0,
 			"byteLength":492,
-			"byteOffset":7664
-		},
-		{
-			"buffer":0,
-			"byteLength":656,
-			"byteOffset":8156
-		},
-		{
-			"buffer":0,
-			"byteLength":8,
-			"byteOffset":8812
-		},
-		{
-			"buffer":0,
-			"byteLength":24,
-			"byteOffset":8820
-		},
-		{
-			"buffer":0,
-			"byteLength":492,
-			"byteOffset":8844
-		},
-		{
-			"buffer":0,
-			"byteLength":656,
-			"byteOffset":9336
-		},
-		{
-			"buffer":0,
-			"byteLength":24,
-			"byteOffset":9992
-		},
-		{
-			"buffer":0,
-			"byteLength":492,
-			"byteOffset":10016
-		},
-		{
-			"buffer":0,
-			"byteLength":656,
-			"byteOffset":10508
-		},
-		{
-			"buffer":0,
-			"byteLength":24,
-			"byteOffset":11164
-		},
-		{
-			"buffer":0,
-			"byteLength":492,
-			"byteOffset":11188
-		},
-		{
-			"buffer":0,
-			"byteLength":656,
-			"byteOffset":11680
-		},
-		{
-			"buffer":0,
-			"byteLength":24,
-			"byteOffset":12336
-		},
-		{
-			"buffer":0,
-			"byteLength":492,
-			"byteOffset":12360
+			"byteOffset":10888
 		},
 		{
 			"buffer":0,
 			"byteLength":32,
-			"byteOffset":12852
+			"byteOffset":11380
 		},
 		{
 			"buffer":0,
 			"byteLength":24,
-			"byteOffset":12884
+			"byteOffset":11412
+		},
+		{
+			"buffer":0,
+			"byteLength":640,
+			"byteOffset":11436
 		},
 		{
 			"buffer":0,
 			"byteLength":492,
-			"byteOffset":12908
-		},
-		{
-			"buffer":0,
-			"byteLength":656,
-			"byteOffset":13400
-		},
-		{
-			"buffer":0,
-			"byteLength":24,
-			"byteOffset":14056
+			"byteOffset":12076
 		}
 	],
 	"samplers":[
@@ -1533,7 +1482,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":14080,
+			"byteLength":12568,
 			"uri":"Robot.bin"
 		}
 	]

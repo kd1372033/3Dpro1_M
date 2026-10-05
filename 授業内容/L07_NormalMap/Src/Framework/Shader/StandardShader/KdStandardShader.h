@@ -31,6 +31,11 @@ public:
 		float			DissolveEdgeRange = 0.03f;	// 0 ～ 1
 
 		Math::Vector3	DissolveEmissive = { 0.0f, 1.0f, 1.0f };
+
+		// 9/14追加
+		// アウトライン対応
+		int EnableOutLineDraw = 0;
+		float _blank[3] = { 0,0,0 };//パディング
 	};
 
 	// 定数バッファ(メッシュ単位更新)
@@ -128,6 +133,19 @@ public:
 		SetDissolveTexture(*m_dissolveTex);
 	}
 
+	// 9/14追加=======================================
+	// アウトライン描画設定
+	void SetEnableOutLineDraw(const bool enableOutLineDraw = false)
+	{
+		if (m_cb0_Obj.Work().EnableOutLineDraw != static_cast<int>(enableOutLineDraw))
+		{
+			m_cb0_Obj.Work().EnableOutLineDraw = enableOutLineDraw;
+			m_dirtyCBObj = true;
+		}
+	}
+	//================================================
+
+
 	//================================================
 	// 各定数バッファの取得
 	//================================================
@@ -163,7 +181,7 @@ public:
 		const Math::Vector4& col, const Math::Vector3& emissive);
 
 	// モデルデータ描画：アニメーションに非対応
-	void DrawModel(const KdModelData& rModel, const Math::Matrix& mWorld = Math::Matrix::Identity, 
+	void DrawModel(const KdModelData& rModel, const Math::Matrix& mWorld = Math::Matrix::Identity,
 		const Math::Color& colRate = kWhiteColor, const Math::Vector3& emissive = Math::Vector3::Zero);
 
 	// モデルワーク描画：アニメーションに対応
@@ -205,6 +223,10 @@ private:
 	// 定数バッファを初期状態に戻す
 	void ResetCBObject();
 
+	// 9/14追加
+	// アウトライン描画設定
+	bool GetOutLineDraw() { return m_cb0_Obj.Work().EnableOutLineDraw; }
+
 	// スキンメッシュ有効かどうか(スキンメッシュ対応)
 	void SetIsSkinMeshObj(bool isSkinMEshObj)
 	{
@@ -233,7 +255,7 @@ private:
 
 	// 頂点入力レイアウト
 	ID3D11InputLayout* m_inputLayout = nullptr;
-	
+
 	// ピクセルシェーダー
 	ID3D11PixelShader* m_PS_Lit = nullptr;					// 陰影あり
 	ID3D11PixelShader* m_PS_UnLit = nullptr;				// 陰影なし

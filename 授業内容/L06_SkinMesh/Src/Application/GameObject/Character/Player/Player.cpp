@@ -7,8 +7,8 @@ void Player::Init()
 	{
 		// モデルのロード
 		m_spModel = std::make_shared<KdModelWork>();
-		//m_spModel->SetModelData("Asset/Data/LessonData/Character/Robot/Robot.gltf");
-		m_spModel->SetModelData("Asset/Data/LessonData/Character/SkinMeshMan/SkinMeshMan.gltf");
+		m_spModel->SetModelData("Asset/Data/LessonData/Character/Robot/Robot.gltf");
+		//m_spModel->SetModelData("Asset/Data/LessonData/Character/SkinMeshMan/SkinMeshMan.gltf");
 		
 		
 		// アニメータの準備
